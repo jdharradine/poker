@@ -1,6 +1,6 @@
 import java.lang.IllegalArgumentException
 
-class Ranking(private val communityCards: ArrayList<Card>, private val hand: ArrayList<Card>): Comparable<Ranking> {
+class Ranking(private val communityCards: ArrayList<Card>, private val hand: ArrayList<Card>, val playerIdx: Int): Comparable<Ranking> {
 
     /**
      * Stores the value of the highest card to distinguish between similar hands

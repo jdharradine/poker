@@ -4,7 +4,7 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
     private var deck = Deck()
 
     /* Array of players in game */
-    private var Players = ArrayList<Player>()
+    private var players = ArrayList<Player>()
 
     /* Object storing cards used for community */
     private var communityCards = CommunityCards()
@@ -15,7 +15,7 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
         this.initPlayers()
         this.givePlayersCards()
 
-        this.printPlayers()
+//        this.printPlayers()
 
         /* Begin round */
         initFlop()
@@ -27,12 +27,17 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
 
         val rankings: ArrayList<Ranking> = ArrayList()
 
-        for (player in this.Players) {
+        for (playerIdx in 0 until this.players.size) {
 
             println("----------------")
-            println(player.name)
-            Ranking(this.communityCards.getList(), player.getHand())
+            println(this.players[playerIdx])
+            rankings.add(Ranking(this.communityCards.getList(), this.players[playerIdx].getHand(), playerIdx))
         }
+
+        rankings.sort()
+        println("----------------")
+        println("${players[rankings.last().playerIdx].name} wins")
+        println("----------------")
     }
 
     /**
@@ -72,7 +77,7 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
 
         for (player in 1..numPlayers) {
 
-            Players.add(Player("player $player",
+            players.add(Player("player $player",
                     startMoney = startMoney))
         }
     }
@@ -84,7 +89,7 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
 
         for (index in 1..2) {
 
-            for (player in Players) {
+            for (player in players) {
 
                 player.giveCard(this.deck.getNextCard())
             }
@@ -96,7 +101,7 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
      */
     fun printPlayers() {
 
-        for (player in this.Players) {
+        for (player in this.players) {
 
             println(player.toString())
         }
