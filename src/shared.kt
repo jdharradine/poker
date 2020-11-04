@@ -10,7 +10,7 @@ enum class Suit(val type: Int) {
 /* Enum storing value of card */
 enum class Value(val value: Int) {
 
-    ACE(14), // Special value because also 14
+    ACE(14), // Special value because also 1
     TWO(2),
     THREE(3),
     FOUR(4),

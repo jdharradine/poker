@@ -15,6 +15,7 @@ class Card(val suit: Suit, val value: Value) {
      **/
     private fun initCardSymbol() {
 
+        /* Assign suit characters */
         when (this.suit) {
 
             Suit.HEARTS -> {
@@ -38,7 +39,14 @@ class Card(val suit: Suit, val value: Value) {
             }
         }
 
-        this.unicode += (this.value).toString()
+        /* Assign value characters */
+        if (this.value == Value.QUEEN || this.value == Value.KING) {
+
+            this.unicode += "%01X".format(this.value.value + 1)
+        } else {
+
+            this.unicode += this.value.toString()
+        }
     }
 
     override fun toString(): String {
