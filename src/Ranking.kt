@@ -19,7 +19,7 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
      * It determines the total card value of the significant cards in hand
      * @type {Int}
      */
-    private var score: Int = 0
+    private var cardSum: Int = 0
 
     /**
      * Stores all the cards to be ranked
@@ -50,7 +50,12 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
         this.combinedCards.sortBy{it.value.ordinal}
 
         /* Determine hand ranking */
-        this.score = this.extractScore()
+        this.cardSum = this.extractScore()
+
+        println()
+        println(this.handRanking.name)
+        println("Card Sum: " + String.format("%d", this.cardSum))
+        println("Highest Card: ${highestCard.value.name}")
     }
 
     /** Returns list of combinations of cards
@@ -156,7 +161,7 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
             this.highestCard = this.hand.last()
         }
 
-        this.score = this.highestCard.value.value
+        this.cardSum = this.highestCard.value.value
 
         /* extract ranking from combinations */
         this.getScoreFromCombinations(combinations)
@@ -164,10 +169,7 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
         /* Check combinations of flush and straight */
         this.getScoreFromStraightAndFlush()
 
-        println(this.handRanking.name)
-        println("Score: " + String.format("%.2f", this.score))
-
-        return score
+        return cardSum
     }
 
     /** Sets score and handRanking to best handRanking found in combinations
@@ -230,10 +232,15 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
                     setScore(straightFlush, HandRanking.STRAIGHT_FLUSH)
                 }
                 this.printHand("Largest Straight Flush", straightFlush)
-            } else { // Hand is straight
+            } else { // Hand may be straight
 
-                this.printHand("Largest Straight", this.getHighestCards(orderedCards))
-                setScore(this.getHighestCards(orderedCards), HandRanking.STRAIGHT)
+                val largestStraight = this.getHighestCards(this.removeDuplicateValues(orderedCards))
+
+                if (largestStraight.isNotEmpty()) {
+
+                    this.printHand("Largest Straight (${largestStraight.size})", largestStraight)
+                    setScore(largestStraight, HandRanking.STRAIGHT)
+                }
             }
             return
         }
@@ -260,10 +267,10 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
         if ((handRanking == HandRanking.STRAIGHT || handRanking == HandRanking.STRAIGHT_FLUSH) &&
                 bestHand[0].value == Value.ACE) {
 
-            this.score -= (Value.ACE.value - 1)
+            this.cardSum -= (Value.ACE.value - 1)
         }
 
-        this.score += getSubScoreFromHand(bestHand)
+        this.cardSum += getSubScoreFromHand(bestHand)
     }
 
     /**
@@ -369,6 +376,28 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
         return cards
     }
 
+    /**
+     * Takes in list of cards and returns a list with no duplicate values
+     * @param {Card[]} cards - list of cards to remove duplicates from
+     * @return {Card[]} list of cards without duplicates
+     */
+    private fun removeDuplicateValues(cards: ArrayList<Card>): ArrayList<Card> {
+
+        val tempCards = ArrayList<Card>()
+
+        tempCards.add(cards[0])
+
+        for (card in 1 until cards.size) {
+
+            if (cards[card].value != cards[card - 1].value) {
+
+                tempCards.add(cards[card])
+            }
+        }
+
+        return tempCards
+    }
+
     /** Returns true if hand is royal flush
      * @ensure hand is at minimum a straight-flush
      * @param {Card[]} hand - list of cards to check if royal flush
@@ -385,10 +414,10 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
      **/
     private fun getSubScoreFromCombinations(combinations: ArrayList<ArrayList<Card>>) {
 
-        this.score = 0
+        this.cardSum = 0
         for (combination in combinations) {
 
-            this.score += this.getSubScoreFromHand(combination)
+            this.cardSum += this.getSubScoreFromHand(combination)
         }
     }
 
@@ -449,6 +478,12 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
 
         println(prefix)
 
+        if (hand.isEmpty()) {
+
+            println("No cards found")
+            return
+        }
+
         var string = ""
         for (card in hand) {
 
@@ -462,11 +497,18 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
 
         return when {
             this.handRanking == other.handRanking -> {
-
                 when {
-                    this.score == other.score -> 0
+                    this.cardSum == other.cardSum -> {
+                        when {
+                            this.highestCard.value.value == other.highestCard.value.value -> 0
 
-                    this.score > other.score -> 1
+                            this.highestCard.value.value > other.highestCard.value.value -> 1
+
+                            else -> -1
+                        }
+                    }
+
+                    this.cardSum > other.cardSum -> 1
 
                     else -> -1
                 }

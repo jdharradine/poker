@@ -46,9 +46,10 @@ class Player(val name: String = "Undefined", val startMoney: Int) {
 
         return this.hand
     }
+
     override fun toString(): String {
 
-        var string = "${this.name} (${this.hand.size})\n"
+        var string = "${this.name}\n"
 
         for (card in this.hand) {
 

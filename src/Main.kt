@@ -1,4 +1,4 @@
 fun main() {
 
-    val game = Game(2, 20000)
+    val game = Game(5, 20000)
 }

@@ -25,7 +25,14 @@ class Game(private val numPlayers: Int, private val startMoney: Int) {
         println("Community Cards")
         println(this.communityCards.toString())
 
-        var ranking = Ranking(this.communityCards.getList(), this.Players[0].getHand())
+        val rankings: ArrayList<Ranking> = ArrayList()
+
+        for (player in this.Players) {
+
+            println("----------------")
+            println(player.name)
+            Ranking(this.communityCards.getList(), player.getHand())
+        }
     }
 
     /**
