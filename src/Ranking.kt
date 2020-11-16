@@ -515,7 +515,7 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
      */
     private fun compareCombinations(other: Ranking): Int {
 
-        for (i in this.combinedCards.lastIndex downTo 0) {
+        for (i in this.combinations.lastIndex downTo 0) {
 
             if (this.combinations[i].first().value > other.combinations[i].first().value) {
 
