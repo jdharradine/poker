@@ -451,6 +451,13 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
             /* HandRankings match therefore need to compare other properties */
             this.handRanking == other.handRanking -> {
 
+                /* If hand ranking depends on combinations determine best combinations */
+                if (this.isCombinationHandRanking(this.handRanking) &&
+                        compareCombinations(other) != 0) {
+
+                    return compareCombinations(other)
+                }
+
                 when {
                     /* Score metrics match therefore need to compare highest cards */
                     this.score == other.score -> compareHighestCard(other)
@@ -468,7 +475,7 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
     }
 
     /** Takes other Ranking object and determines whether or not this object has the highest ranked card
-     * @param {Ranking} other ranking used for comparison
+     * @param {Ranking} other - other ranking used for comparison
      * @return {Int} - 0 if no difference found, 1 if this has highest card, else -1
      */
     private fun compareHighestCard(other: Ranking): Int {
@@ -479,6 +486,41 @@ class Ranking(private val communityCards: ArrayList<Card>, private val hand: Arr
 
                 return 1
             } else if (this.combinedCards[i].value < other.combinedCards[i].value) {
+
+                return -1
+            }
+        }
+
+        /* If all cards are equal in value than no highest card winner can be determined */
+        return 0
+    }
+
+    /**
+     * Takes HandRanking object and determines if it is a combination category handRanking
+     * @param {HandRanking} handRanking - handRanking to check for combination category
+     * @return {Boolean} - true if combination type handRanking, else false
+     */
+    private fun isCombinationHandRanking(handRanking: HandRanking): Boolean {
+
+        return (handRanking == HandRanking.ONE_PAIR ||
+                handRanking == HandRanking.TWO_PAIR ||
+                handRanking == HandRanking.THREE_OF_A_KIND ||
+                handRanking == HandRanking.FULL_HOUSE ||
+                handRanking == HandRanking.FOUR_OF_A_KIND)
+    }
+
+    /** Takes other Ranking object and determines whether or not this object has the better set of combinations
+     * @param {Ranking} other - other ranking used for comparison
+     * @return {Int} - 0 if no difference found, 1 if this has best combinations, else -1
+     */
+    private fun compareCombinations(other: Ranking): Int {
+
+        for (i in this.combinedCards.lastIndex downTo 0) {
+
+            if (this.combinations[i].first().value > other.combinations[i].first().value) {
+
+                return 1
+            } else if (this.combinations[i].first().value < other.combinations[i].first().value) {
 
                 return -1
             }
